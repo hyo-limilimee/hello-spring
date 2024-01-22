@@ -5,13 +5,17 @@ import hello.hellospring.repository.MemberRepository;
 import hello.hellospring.repository.MemoryMemberRepository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
 
     // 직접 new가 아니라 외부에서 넣어주도록 변경
-    public MemberService(MemberRepository memberRepository){
+    @Autowired
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
@@ -32,11 +36,11 @@ public class MemberService {
 
 
     // 전체 회원 조회
-    public List<Member> findMembers(){
+    public List<Member> findMembers() {
         return memberRepository.findAll();
     }
 
-    public Optional<Member> findOne(Long memberId){
+    public Optional<Member> findOne(Long memberId) {
         return memberRepository.findById(memberId);
     }
 }
