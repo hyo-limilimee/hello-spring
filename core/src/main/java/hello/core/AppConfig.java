@@ -16,20 +16,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AppConfig {
 
+    // @Bean memberService -> new MemoryMemberRepository()
+    // @Bean orderService -> new MemoryMemberRepository()
+
     // 생성자 주입
     @Bean
     public MemberService memberService() {
+        //1번
+        System.out.println("call AppConfig.memberService");
         return new MemberServiceImpl(memberRepository());
     }
-
-    @Bean
-    private static MemberRepository memberRepository() {
-        return new MemoryMemberRepository();
-    }
-
     @Bean
     public OrderService orderService() {
-        return new OrderServiceImpl(memberRepository(), discountPolicy());
+        //1번
+        System.out.println("call AppConfig.orderService");
+        return new OrderServiceImpl(
+                memberRepository(),
+                discountPolicy());
+    }
+
+    // static이면, 싱글톤 보장 X
+    @Bean
+    public MemberRepository memberRepository() {
+        //2번? 3번?
+        System.out.println("call AppConfig.memberRepository");
+        return new MemoryMemberRepository();
     }
 
     @Bean
