@@ -33,6 +33,8 @@ public class AppConfig {
         return new OrderServiceImpl(
                 memberRepository(),
                 discountPolicy());
+
+//        return null;
     }
 
     // static이면, 싱글톤 보장 X
