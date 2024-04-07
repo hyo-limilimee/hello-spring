@@ -9,10 +9,11 @@ import hello.core.member.MemberService;
 import hello.core.member.MemoryMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final MemberRepository memberRepository;
@@ -23,13 +24,16 @@ public class OrderServiceImpl implements OrderService {
 //    @Autowired
 //    public void setMemberRepository(MemberRepository memberRepository){
 //        this.memberRepository = memberRepository;
-//    }
+//    }@Qualifier("fixDiscountPolicy")
 
-//    @Autowired  // 생략 가능
-//    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
-//        this.memberRepository = memberRepository;
-//        this.discountPolicy = discountPolicy;
-//    }
+    @Autowired
+    private DiscountPolicy rateDiscountPolicy;
+
+    @Autowired  // 생략 가능
+    public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+        this.memberRepository = memberRepository;
+        this.discountPolicy = discountPolicy;
+    }
 
     @Override
     public Order createOrder(Long memberId, String itemName, int itemPrice) {
