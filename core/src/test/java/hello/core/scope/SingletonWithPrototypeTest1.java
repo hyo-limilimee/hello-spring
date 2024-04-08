@@ -4,14 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.inject.Provider;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 public class SingletonWithPrototypeTest1 {
     @Test
-    void singletonClientUsePrototype(){
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(ClientBean.class, PrototypeBean.class);
+    void singletonClientUsePrototype() {
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(ClientBean.class,
+                PrototypeBean.class);
 
         ClientBean clientBean1 = ac.getBean(ClientBean.class);
         int count1 = clientBean1.logic();
@@ -19,19 +23,24 @@ public class SingletonWithPrototypeTest1 {
 
         ClientBean clientBean2 = ac.getBean(ClientBean.class);
         int count2 = clientBean2.logic();
-        assertThat(count2).isEqualTo(2);
+        assertThat(count2).isEqualTo(1);
 
     }
 
     @Scope("singleton")
-    static class ClientBean{
-        private final PrototypeBean prototypeBean;
+    static class ClientBean {
+//        private final PrototypeBean prototypeBean;
 
-        public ClientBean(PrototypeBean prototypeBean){
-            this.prototypeBean = prototypeBean;
-        }
+        @Autowired
+        private Provider<PrototypeBean> prototypeBeanProvider;
 
-        public int logic(){
+//        @Autowired
+//        public ClientBean(PrototypeBean prototypeBean){
+//            this.prototypeBean = prototypeBean;
+//        }
+
+        public int logic() {
+            PrototypeBean prototypeBean = prototypeBeanProvider.get();
             prototypeBean.addCount();
             int count = prototypeBean.getCount();
             return count;
@@ -39,7 +48,7 @@ public class SingletonWithPrototypeTest1 {
     }
 
     @Test
-    void prototypeFind(){
+    void prototypeFind() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(PrototypeBean.class);
         PrototypeBean prototypeBean1 = ac.getBean(PrototypeBean.class);
         prototypeBean1.addCount();
@@ -51,28 +60,27 @@ public class SingletonWithPrototypeTest1 {
     }
 
 
-
     @Scope("prototype")
-    static class PrototypeBean{
+    static class PrototypeBean {
         private int count = 0;
 
-        public void addCount(){
+        public void addCount() {
             count++;
         }
 
-        public int getCount(){
+        public int getCount() {
             return count;
         }
 
         @PostConstruct
-        public void init(){
+        public void init() {
             System.out.println("PrototypeBean.init" + this);
         }
 
 
-        // 호출되지 안흘 것
+        // 호출되지 않을 것
         @PreDestroy
-        public void destroy(){
+        public void destroy() {
             System.out.println("PrototypeBean.destroy");
         }
     }
